@@ -1,0 +1,949 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Auto and Machinery Spares Co</title>
+  <script type="commonjs" src="server.js"></script>
+ <script src="script.js"></script>
+
+ <style>
+    /* Overall page style with vertical flow from top */
+    body {
+      margin: 0;
+      position: relative;
+      background-image: url('Download_org.jpg'); /* Replace with your background image path */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px 15px 40px 15px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      color: #222;
+    }
+
+    /* Optional translucent overlay on top of background */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(240, 244, 248, 0.85);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Content heading at the top */
+    .content {
+      width: 100%;
+      max-width: 600px;
+      color: #222;
+      text-align: center;
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 30px;
+      user-select: none;
+    }
+
+    /* Search container */
+    .search-container {
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 20px;
+    }
+
+    /* Enlarged logo */
+    .search-container img {
+      max-width: 100%;
+      height: auto;
+      max-height: 120px;
+      margin-bottom: 20px;
+      object-fit: contain;
+      user-select: none;
+    }
+
+    /* Search box style */
+    input[type="search"] {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f0f4f8;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="search"]:focus {
+      outline: none;
+      border-color: #5a9bf6;
+      background-color: #ffffff;
+      box-shadow: 0 0 8px rgba(90, 155, 246, 0.4);
+    }
+
+    /* Results container */
+    #searchResults {
+      max-width: 400px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      max-height: 250px;
+      overflow-y: auto;
+      text-align: left;
+      padding: 10px 15px;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      color: #333;
+      user-select: text;
+      margin: 0 auto 30px auto;
+      display: none;
+      z-index: 1010;
+    }
+
+    /* Each result item */
+    .result-item {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+      cursor: default;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .result-item:last-child {
+      border-bottom: none;
+    }
+
+    .result-item:hover {
+      background-color: #e9f0ff;
+    }
+
+    .result-title {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .result-part {
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 2px;
+    }
+
+    .result-desc {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 0;
+      font-style: italic;
+    }
+
+    .result-price {
+      font-size: 0.95rem;
+      color: #2a5a9b;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .add-to-cart-container {
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .quantity-input {
+      width: 50px;
+      padding: 4px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .add-cart-btn {
+      background: #357ABD;
+      border: none;
+      color: white;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-size: 0.9rem;
+      user-select: none;
+    }
+
+    .add-cart-btn:hover {
+      background: #2a5a9b;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 10px;
+      color: #777;
+      font-style: italic;
+    }
+
+    /* About Us and Contact Us button styling */
+    button.about-us-btn, button.contact-us-btn {
+      background: linear-gradient(135deg, #4a90e2, #357ABD);
+      border: none;
+      border-radius: 30px;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 15px 40px;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(53, 122, 189, 0.6);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+      margin-bottom: 15px;
+      align-self: center;
+      width: 100%;
+      max-width: 280px;
+    }
+
+    button.about-us-btn:hover, button.contact-us-btn:hover,
+    button.about-us-btn:focus, button.contact-us-btn:focus {
+      background: linear-gradient(135deg, #357ABD, #2A5A9B);
+      box-shadow: 0 8px 18px rgba(42, 90, 155, 0.8);
+      outline: none;
+    }
+
+    button.about-us-btn:active, button.contact-us-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Cart icon button */
+    #cartButton {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #357ABD;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(53, 122, 189, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 24px;
+      user-select: none;
+      z-index: 1100;
+    }
+
+    #cartCount {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: #e74c3c;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 12px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    /* Modal container */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(20, 30, 50, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    /* Modal content box */
+    .modal-content {
+      background: white;
+      max-width: 500px;
+      width: 100%;
+      border-radius: 12px;
+      padding: 30px 25px;
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-content h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-weight: 700;
+      color: #222;
+    }
+
+    .modal-content p {
+      color: #555;
+      line-height: 1.5;
+      font-size: 1rem;
+      margin-top: 0;
+      margin-bottom: 15px;
+      white-space: pre-line;
+    }
+
+    .modal-content ul {
+      text-align: left;
+      padding-left: 20px;
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #555;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    /* Close buttons */
+    .close-btn {
+      margin-top: 20px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 30px;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.6);
+      transition: background 0.3s ease;
+      user-select: none;
+    }
+
+    .close-btn:hover,
+    .close-btn:focus {
+      background: #c0392b;
+      outline: none;
+    }
+
+    /* Cart items list */
+    #cartItems {
+      max-height: 300px;
+      overflow-y: auto;
+      text-align: left;
+      margin-bottom: 25px;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #ddd;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .cart-item-name {
+      font-weight: 600;
+      flex: 2 1 60%;
+    }
+
+    .cart-item-qty {
+      flex: 1 1 20%;
+      text-align: center;
+    }
+
+    .cart-item-remove {
+      flex: 1 1 20%;
+      text-align: center;
+      cursor: pointer;
+      color: #e74c3c;
+      font-weight: bold;
+      user-select: none;
+    }
+    .cart-item-remove:hover {
+      color: #c0392b;
+    }
+
+    /* Checkout form */
+    #checkoutForm {
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    #checkoutForm label {
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    #checkoutForm input, #checkoutForm textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+
+    #checkoutSubmit {
+      background: #357ABD;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 25px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      user-select: none;
+    }
+
+    #checkoutSubmit:hover {
+      background: #2a5a9b;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 480px) {
+      .content {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+      }
+      .search-container {
+        max-width: 320px;
+        margin-bottom: 20px;
+      }
+      .search-container img {
+        max-height: 90px;
+        margin-bottom: 15px;
+      }
+      button.about-us-btn, button.contact-us-btn {
+        max-width: 100%;
+      }
+      #searchResults {
+        max-width: 320px;
+        max-height: 200px;
+      }
+      .modal-content {
+        max-width: 90vw;
+        max-height: 80vh;
+        padding: 20px 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 class="content">Welcome to AUTO &amp; MACHINERY SPARES CO.</h1>
+
+  <div class="search-container" role="search">
+    <img
+      src="amsco.jfif"
+      alt="Company logo"
+      width="400"
+      height="120"
+      draggable="false"
+    />
+    <input
+      type="search"
+      id="inventorySearch"
+      placeholder="Enter part name or number here..."
+      aria-label="Search inventory"
+      autocomplete="off"
+    />
+    <div id="searchResults" role="list" aria-live="polite" aria-atomic="true"></div>
+  </div>
+
+  <button
+    class="about-us-btn"
+    id="aboutUsBtn"
+    aria-haspopup="dialog"
+    aria-controls="aboutUsModal"
+    aria-expanded="false"
+  >
+    About Us
+  </button>
+  <button
+    class="contact-us-btn"
+    id="contactUsBtn"
+    aria-haspopup="dialog"
+    aria-controls="contactUsModal"
+    aria-expanded="false"
+  >
+    Contact Us
+  </button>
+
+  <button id="cartButton" aria-label="Shopping Cart">
+    🛒
+    <div id="cartCount" style="display:none;">0</div>
+  </button>
+
+  <!-- About Us Modal -->
+  <div
+    class="modal"
+    id="aboutUsModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modalTitle"
+    tabindex="-1"
+  >
+    <div class="modal-content">
+      <h2 id="modalTitle">About Us</h2>
+      <p>
+        Welcome to Auto and machinery spares Co. – Your Trusted Source for Heavy Machinery
+        Spare Parts
+      </p>
+
+      <p style="font-family: Verdana, Geneva, Tahoma, sans-serif; margin-top: 15px;">
+        Mob-9425025166 <br>
+        We specialize in providing high-quality spare parts for all types of heavy
+        machinery and equipment. Whether you work in construction, mining,
+        agriculture, or industry, we understand how crucial reliable parts are to
+        keeping your operations running smoothly.
+      </p>
+
+      <p style="font-family: Verdana, Geneva, Tahoma, sans-serif; margin-top: 15px;">
+        We offer a wide range of genuine and aftermarket parts, including hydraulic
+        components, engine parts, undercarriage systems, filters, and much more —
+        all from trusted brands. Our team ensures fast delivery, competitive
+        pricing, and expert support to minimize your downtime and maximize your
+        machine's performance.
+      </p>
+
+      <p style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-weight: 600; margin-top: 20px;">
+        Why Choose Us?
+      </p>
+      <ul>
+        <li>Extensive inventory of top-quality parts</li>
+        <li>Expert advice and customer support</li>
+        <li>Fast, worldwide shipping</li>
+        <li>Competitive prices</li>
+        <li>Custom sourcing solutions</li>
+      </ul>
+
+      <p style="font-family: Verdana, Geneva, Tahoma, sans-serif; margin-top: 15px;">
+        Keep your machines moving with parts you can trust. Explore our catalog or
+        contact us today for personalized assistance!
+      </p>
+
+      <button class="close-btn" id="closeAboutBtn">Close</button>
+    </div>
+  </div>
+
+  <!-- Contact Us Modal -->
+  <div
+    class="modal"
+    id="contactUsModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="contactModalTitle"
+    tabindex="-1"
+  >
+    <div class="modal-content">
+      <h2 id="contactModalTitle">Contact Us</h2>
+      <p style="font-family: Verdana, Geneva, Tahoma, sans-serif; margin-bottom: 20px;">
+        Please get in touch with us by filling out the form below, and we'll respond as soon as possible.
+      <br>email-
+     </p> 
+      <form id="contactForm">
+        <label for="nameInput">Name</label>
+        <input type="text" id="nameInput" name="name" required placeholder="Your full name" />
+
+        <label for="emailInput">Email</label>
+        <input type="email" id="emailInput" name="email" required placeholder="Your email address" />
+
+         <label for="gstInput">GSTNumber</label>
+        <input type="text" id="gstInput" name="gst" required placeholder="Your GST number" />
+         
+        <label for="contactnumberInput">Contactnumber</label>
+        <input type="number" id="contactnumberInput" name="contactnumberInput" required placeholder="Your contact number" />
+
+        <label for="messageInput">Message</label>
+        <textarea id="messageInput" name="message" rows="4" required placeholder="Your message"></textarea>
+
+        <button type="submit" class="add-cart-btn" style="width: 100%; margin-top: 15px;">Send Message</button>
+      </form>
+      <button class="close-btn" id="closeContactBtn">Close</button>
+    </div>
+  </div>
+
+  <!-- Cart Modal -->
+  <div
+    class="modal"
+    id="cartModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="cartModalTitle"
+    tabindex="-1"
+  >
+    <div class="modal-content">
+      <h2 id="cartModalTitle">Your Cart</h2>
+      <div id="cartItems" tabindex="0" aria-live="polite" aria-label="Shopping cart items">
+        <!-- Cart items will be dynamically inserted here -->
+      </div>
+      <script src="script.js"></script>
+      <form id="checkoutForm" style="display:none;">
+        <h3>Checkout</h3>
+        <label for="checkoutName">Full Name</label>
+        <input type="text" id="checkoutName" name="checkoutName" required placeholder="Your full name" />
+
+        <label for="checkoutEmail">Email</label>
+        <input type="email" id="checkoutEmail" name="checkoutEmail" required placeholder="Your email address" />
+         
+        <label for="checkoutGSTNumber">GSTNumber</label>
+        <input type="text" id="checkoutGSTNumber" name="checkoutGSTNumber" required placeholder="Your GSTNumber" />
+       
+        <label for="checkoutcontactnumber">Contactnumber</label>
+        <input type="number" id="checkoutcontactnumber" name="checkoutcontactnumber" required placeholder="Your contact number" />
+       
+        <label for="checkoutAddress">Address</label>
+        <textarea id="checkoutAddress" name="checkoutAddress" rows="3" required placeholder="Your address"></textarea>
+
+        <button type="submit" id="checkoutSubmit">Place Order</button>
+      </form>
+
+      <button class="add-cart-btn" id="proceedCheckoutBtn" style="margin-top:15px;">Proceed to Checkout</button>
+      <button class="close-btn" id="closeCartBtn">Close</button>
+    </div>
+  </div>
+
+  <script>
+    // Inventory data - example spare parts
+    const inventory = [
+      { name: "K33 Meter", partNumber: "000553000", description: "High-pressure hydraulic pump for excavators.", Price:"12000" },
+      { name: "Piusi DC12V motor", partNumber: "0034000B", description: "Fuel Transfer.", Price: "16000" },
+      { name: "Tooth Point PC-200", partNumber: "2057019570", description: "Excavators Teeth.", Price: "450" },
+      { name: "Spendol", partNumber: "1473309", description: "Grader part.", Price: "3000" },
+      { name: "Hydraulic Hose", partNumber: "HH-1100", description: "Flexible hose for hydraulic systems.", Price: "950" },
+      { name: "Air Filter", partNumber: "AF-5500", description: "High-efficiency air filter for heavy vehicular engines.", Price: "600" },
+      { name: "Brake Pad", partNumber: "BP-3301", description: "Wear-resistant brake pads for industrial vehicles.", Price: "1200" },
+      { name: "Radiator Fan", partNumber: "RF-7788", description: "Cooling fan for radiators in earthmoving machines.", Price: "2100" },
+      { name: "Alternator", partNumber: "AL-9900", description: "Reliable alternator for power generation.", Price: "8000" },
+      { name: "Track Roller", partNumber: "TR-1234", description: "Support roller for track systems.", Price: "3500" },
+    ];
+
+    const searchInput = document.getElementById('inventorySearch');
+    const resultsContainer = document.getElementById('searchResults');
+
+    // Cart data structure: Array of { item, quantity }
+    let cart = [];
+
+    // Utility: find cart item index by partNumber
+    function findCartItemIndex(partNumber) {
+      return cart.findIndex(c => c.item.partNumber === partNumber);
+    }
+
+    function updateCartCount() {
+      const cartCount = document.getElementById('cartCount');
+      if (cart.length > 0) {
+        cartCount.style.display = 'flex';
+        const totalQty = cart.reduce((sum, c) => sum + c.quantity, 0);
+        cartCount.textContent = totalQty;
+      } else {
+        cartCount.style.display = 'none';
+      }
+    }
+
+    function clearResults() {
+      resultsContainer.innerHTML = '';
+      resultsContainer.style.display = 'none';
+    }
+
+    // Render search results with Add to Cart UI including price display
+    function renderResults(items) {
+      if (items.length === 0) {
+        resultsContainer.innerHTML = '<div class="no-results">No matching parts found,for query contact:9425025166</div>';
+        resultsContainer.style.display = 'block';
+        return;
+      }
+
+      const html = items.map(item => `
+        <div class="result-item" role="listitem" tabindex="0" aria-label="${item.name}, part number ${item.partNumber}">
+          <div class="result-title">${item.name}</div>
+          <div class="result-part">Part No: ${item.partNumber || 'N/A'}</div>
+          <div class="result-desc">${item.description || ''}</div>
+          <div class="result-price">Price: ₹${item.Price}</div>
+          <div class="add-to-cart-container">
+            <label for="qty-${item.partNumber || item.name.replace(/\s+/g, '-')}" style="font-size:0.9rem;">Qty:</label>
+            <input type="number" id="qty-${item.partNumber || item.name.replace(/\s+/g, '-')}" class="quantity-input" min="1" value="1" aria-label="Quantity for ${item.name}" />
+            <button class="add-cart-btn" data-partnumber="${item.partNumber}" data-name="${item.name}">Add to Cart</button>
+          </div>
+        </div>
+      `).join('');
+      resultsContainer.innerHTML = html;
+      resultsContainer.style.display = 'block';
+
+      // Attach event listeners for Add to Cart buttons
+      const addButtons = resultsContainer.querySelectorAll('.add-cart-btn');
+      addButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const partNumber = button.getAttribute('data-partnumber');
+          const name = button.getAttribute('data-name');
+          const qtyInput = document.getElementById(`qty-${partNumber || name.replace(/\s+/g, '-')}`);
+          let quantity = parseInt(qtyInput.value);
+          if (isNaN(quantity) || quantity < 1) {
+            alert('Please enter a valid quantity (minimum 1).');
+            return;
+          }
+          addToCart(partNumber, name, quantity);
+        });
+      });
+    }
+
+    function searchInventory(query) {
+      if (!query) {
+        clearResults();
+        return;
+      }
+      const lowerQuery = query.toLowerCase();
+      const filtered = inventory.filter(item => (
+        item.name.toLowerCase().includes(lowerQuery) ||
+        (item.partNumber && item.partNumber.toLowerCase().includes(lowerQuery))
+      ));
+      renderResults(filtered);
+    }
+
+    // Debounce for input events
+    let debounceTimer;
+    searchInput.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        searchInventory(searchInput.value.trim());
+      }, 200);
+    });
+
+    // CART FUNCTIONS
+    function addToCart(partNumber, name, quantity) {
+      const item = inventory.find(i => i.partNumber === partNumber);
+      if (!item) {
+        alert('Item not found in inventory.');
+        return;
+      }
+      const idx = findCartItemIndex(partNumber);
+      if (idx >= 0) {
+        cart[idx].quantity += quantity;
+      } else {
+        cart.push({ item, quantity });
+      }
+      alert(`${quantity} x ${name} added to your cart.`);
+      updateCartCount();
+    }
+
+    function removeCartItem(index) {
+      if (index >= 0 && index < cart.length) {
+        cart.splice(index, 1);
+        renderCartItems();
+        updateCartCount();
+      }
+    }
+
+    function renderCartItems() {
+      const cartItemsDiv = document.getElementById('cartItems');
+      if (cart.length === 0) {
+        cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
+        document.getElementById('checkoutForm').style.display = 'none';
+        document.getElementById('proceedCheckoutBtn').style.display = 'none';
+        return;
+      }
+      document.getElementById('checkoutForm').style.display = 'none';
+      document.getElementById('proceedCheckoutBtn').style.display = 'inline-block';
+
+      cartItemsDiv.innerHTML = cart.map((c, index) => `
+        <div class="cart-item">
+          <div class="cart-item-name">${c.item.name}</div>
+          <div class="cart-item-qty">Qty: ${c.quantity}</div>
+          <div class="cart-item-remove" tabindex="0" role="button" aria-label="Remove ${c.item.name} from cart" data-index="${index}">&times;</div>
+        </div>
+      `).join('');
+
+      // Attach remove handlers
+      cartItemsDiv.querySelectorAll('.cart-item-remove').forEach(el => {
+        el.addEventListener('click', () => {
+          const idx = parseInt(el.getAttribute('data-index'));
+          removeCartItem(idx);
+        });
+        el.addEventListener('keypress', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            const idx = parseInt(el.getAttribute('data-index'));
+            removeCartItem(idx);
+          }
+        });
+      });
+    }
+
+    // Modal Elements
+    const aboutUsBtn = document.getElementById('aboutUsBtn');
+    const aboutUsModal = document.getElementById('aboutUsModal');
+    const closeAboutBtn = document.getElementById('closeAboutBtn');
+
+    const contactUsBtn = document.getElementById('contactUsBtn');
+    const contactUsModal = document.getElementById('contactUsModal');
+    const closeContactBtn = document.getElementById('closeContactBtn');
+
+    const cartButton = document.getElementById('cartButton');
+    const cartModal = document.getElementById('cartModal');
+    const closeCartBtn = document.getElementById('closeCartBtn');
+    const cartItemsDiv = document.getElementById('cartItems');
+    const proceedCheckoutBtn = document.getElementById('proceedCheckoutBtn');
+    const checkoutForm = document.getElementById('checkoutForm');
+    const checkoutSubmit = document.getElementById('checkoutSubmit');
+
+    // About Us modal handlers
+    aboutUsBtn.addEventListener('click', () => {
+      aboutUsModal.classList.add('active');
+      aboutUsBtn.setAttribute('aria-expanded', 'true');
+      aboutUsModal.focus();
+      closeAllOtherModals('aboutUsModal');
+    });
+
+    closeAboutBtn.addEventListener('click', () => {
+      aboutUsModal.classList.remove('active');
+      aboutUsBtn.setAttribute('aria-expanded', 'false');
+      aboutUsBtn.focus();
+    });
+
+    // Contact Us modal handlers
+    contactUsBtn.addEventListener('click', () => {
+      contactUsModal.classList.add('active');
+      contactUsBtn.setAttribute('aria-expanded', 'true');
+      contactUsModal.focus();
+      closeAllOtherModals('contactUsModal');
+    });
+
+    closeContactBtn.addEventListener('click', () => {
+      contactUsModal.classList.remove('active');
+      contactUsBtn.setAttribute('aria-expanded', 'false');
+      contactUsBtn.focus();
+    });
+
+    // Cart modal handlers
+    cartButton.addEventListener('click', () => {
+      cartModal.classList.add('active');
+      cartButton.setAttribute('aria-expanded', 'true');
+      cartModal.focus();
+      renderCartItems();
+      closeAllOtherModals('cartModal');
+    });
+
+    closeCartBtn.addEventListener('click', () => {
+      cartModal.classList.remove('active');
+      cartButton.setAttribute('aria-expanded', 'false');
+      cartButton.focus();
+    });
+
+    function closeAllOtherModals(openModalId) {
+      const allModals = [aboutUsModal, contactUsModal, cartModal];
+      allModals.forEach(modal => {
+        if (modal.id !== openModalId) {
+          modal.classList.remove('active');
+          // Reset aria-expanded on buttons
+          if (modal === aboutUsModal) aboutUsBtn.setAttribute('aria-expanded', 'false');
+          else if (modal === contactUsModal) contactUsBtn.setAttribute('aria-expanded', 'false');
+          else if (modal === cartModal) cartButton.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    // Close modals on outside click
+    [aboutUsModal, contactUsModal, cartModal].forEach(modal => {
+      modal.addEventListener('click', e => {
+        if (e.target === modal) {
+          modal.classList.remove('active');
+          if (modal === aboutUsModal) aboutUsBtn.setAttribute('aria-expanded', 'false');
+          else if (modal === contactUsModal) contactUsBtn.setAttribute('aria-expanded', 'false');
+          else if (modal === cartModal) cartButton.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
+
+    // Close modals on ESC key
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        [aboutUsModal, contactUsModal, cartModal].forEach(modal => {
+          if (modal.classList.contains('active')) {
+            modal.classList.remove('active');
+            if (modal === aboutUsModal) aboutUsBtn.setAttribute('aria-expanded', 'false');
+            else if (modal === contactUsModal) contactUsBtn.setAttribute('aria-expanded', 'false');
+            else if (modal === cartModal) cartButton.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+    });
+
+    // Checkout process
+    proceedCheckoutBtn.addEventListener('click', () => {
+      proceedCheckoutBtn.style.display = 'none';
+      checkoutForm.style.display = 'flex';
+      document.getElementById('checkoutName').focus();
+    });
+
+   checkoutForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const orderData = {
+        name: document.getElementById('checkoutName').value,
+        email: document.getElementById('checkoutEmail').value,
+        gst: document.getElementById('checkoutGSTNumber').value,
+        contactnumber: document.getElementById('checkoutcontactnumber').value,
+        address: document.getElementById('checkoutAddress').value,
+        items: cart.map(c => ({
+            name: c.item.name,
+            price: Number(c.item.Price),
+            quantity: c.quantity
+        }))
+    };
+       try {
+       console.log('Form submitted!');
+       console.log('orderData:', orderData);
+
+       const response = await fetch('http://localhost:3000/order', {
+           method: 'POST',
+           headers: {
+               'Content-Type': 'application/json',
+               'Accept': 'application/json',
+           },
+           body: JSON.stringify(orderData)
+       });
+
+       const result = await response.json();
+       console.log('Response status:', response.status);
+       console.log('Response body:', result);
+
+       if (response.ok) {
+           alert('Order placed successfully!,Please check mail you recieved for order id');
+       } else {
+           console.error('Error placing order:', result);
+           alert('Failed to place order: ' + (result.message || 'Unknown error'));
+       }
+   } catch (error) {
+       console.error('Fetch error:', error);
+       alert('Something went wrong while placing the order.');
+   }});
+   
+
+    // Initialize cart count on page load
+    updateCartCount();
+  </script>
+
+</body>
+</html>
+
+

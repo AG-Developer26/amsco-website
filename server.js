@@ -3,6 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const nodemailer = require('nodemailer');
+const { Pool } = require('pg');
 
 const app = express();
 const port = 3000;
@@ -26,12 +27,11 @@ const transporter = nodemailer.createTransport({
 });
 
 // ✅ MySQL connection
-const db = mysql.createConnection({
-  host: 'localhost',
-  port: 3306,
-  user: 'webuser',
-  password: 'webpassword',
-  database: 'auto_machinery_spares',
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false, // required for Render
+  },
 });
 
 db.connect((err) => {
